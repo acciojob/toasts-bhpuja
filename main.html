@@ -1,33 +1,128 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toast System</title>
+  <style>
+    /* Basic styles for the toast system */
+    #toasts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .toast {
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .success-toast {
+      background-color: green;
+    }
+    .error-toast {
+      background-color: red;
+    }
+    .cancel-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .cancel-button:hover {
+      color: black;
+    }
+  </style>
 </head>
-
 <body>
-    <!-- the entire body must be written by student -->
-    <div id="inputs">
-		<textarea id="message-content" placeholder="Message content..."></textarea>
-		<div class="input">
-			<label for="duration">Duration</label> <input id="duration" type="number" min="500" value="3000" />
-		</div>
-		<div class="input">
-			<label for="cancelable">Is Cancelable</label> <input id="cancelable" type="checkbox" />
-		</div>
-		<div class="input">
-			<label for="success">Success</label>
-			<input id="success" type="radio" name="type" value="success" checked />
-			<label for="error">Error</label> <input id="error" type="radio" name="type" value="error" />
-		</div>
-		<button id="add-button">Add Toast</button>
-		<button id="clear-button">Clear Toasts</button>
-    </div>
-	<div id="toasts"></div>
-    <script type="text/javascript" src="./script.js">
-</script>
+  <h1>Toast System</h1>
+  
+  <div>
+    <label>
+      <input type="radio" id="success" name="toast-type" checked>
+      Success
+    </label>
+    <label>
+      <input type="radio" id="error" name="toast-type">
+      Error
+    </label>
+  </div>
 
+  <div>
+    <label for="message-content">Message Content:</label><br>
+    <textarea id="message-content" rows="3" cols="30"></textarea>
+  </div>
+
+  <div>
+    <label for="duration">Duration (ms):</label>
+    <input type="number" id="duration" placeholder="Enter duration">
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox" id="cancelable">
+      Cancelable
+    </label>
+  </div>
+
+  <button id="add-button">Add Toast</button>
+  <button id="clear-button">Clear Toasts</button>
+
+  <div id="toasts"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const addButton = document.getElementById("add-button");
+      const clearButton = document.getElementById("clear-button");
+      const toastsContainer = document.getElementById("toasts");
+      const successRadio = document.getElementById("success");
+      const errorRadio = document.getElementById("error");
+      const messageContent = document.getElementById("message-content");
+      const durationInput = document.getElementById("duration");
+      const cancelableCheckbox = document.getElementById("cancelable");
+
+      addButton.addEventListener("click", () => {
+        const isSuccess = successRadio.checked;
+        const toastClass = isSuccess ? "success-toast" : "error-toast";
+        const message = messageContent.value.trim() || (isSuccess ? "Success!" : "Error.");
+        let duration = parseInt(durationInput.value, 10);
+        if (isNaN(duration) || duration < 500) {
+          duration = 500;
+        }
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${toastClass}`;
+
+        const messageElement = document.createElement("p");
+        messageElement.className = "message";
+        messageElement.textContent = message;
+        toast.appendChild(messageElement);
+
+        if (cancelableCheckbox.checked) {
+          const cancelButton = document.createElement("button");
+          cancelButton.className = "cancel-button";
+          cancelButton.textContent = "X";
+          cancelButton.addEventListener("click", () => {
+            toast.remove();
+          });
+          toast.appendChild(cancelButton);
+        }
+
+        toastsContainer.prepend(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, duration);
+      });
+
+      clearButton.addEventListener("click", () => {
+        toastsContainer.innerHTML = "";
+      });
+    });
+  </script>
 </body>
-
 </html>
